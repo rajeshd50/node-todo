@@ -3,6 +3,7 @@
 let express = require('express'),
   bodyParser = require('body-parser'),
   path = require('path'),
+  logger = require('morgan'),
   config = require('./app_api/config/config').config,
   routes = require('./app_api/modules/index'),
   expressJwt = require('express-jwt'),
@@ -19,6 +20,7 @@ let unprotectedRoute = [
 
 require('./app_api/db/');
 
+app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(expressJwt({

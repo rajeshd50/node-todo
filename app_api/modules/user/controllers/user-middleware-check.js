@@ -1,5 +1,7 @@
 'use strict';
 
+let mongoose = require('mongoose'),
+	KeyStore = mongoose.model('KeyStore');
 
 function getToken(req) {
 	if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
@@ -16,8 +18,21 @@ module.exports = (config)=> {
 	let checkValidation = (req,res,next)=> {
 		let token = getToken(req),
 			user = req.user;
-		//check here
-		next();
+		
+		KeyStore.findOne({
+			userId: user.userId,
+			token: token
+		},(err,data)=> {
+			if(err || !data) {
+				return res.status(403).json({message: 'Unauthorized!!'});
+			}
+			let now = new Date();
+			if(now>=data.expiary) {
+				data.remove((err)=>{});
+				return res.status(403).json({message: 'Token expired!!'});
+			}
+			next();
+		})
 	};
 
 	checkValidation.unless = require('express-unless');

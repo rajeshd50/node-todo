@@ -2,7 +2,8 @@
 
 let mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
-	bcrypt = require('bcryptjs');
+	bcrypt = require('bcryptjs'),
+    KeyStore = mongoose.model('KeyStore');
 
 let UserSchema = new Schema({
 	userName: {
@@ -24,10 +25,10 @@ let UserSchema = new Schema({
 	}
 });
 
-UserSchema.pre('save', function (next) {
-    var user = this;
+UserSchema.pre('save', function(next) {
+    let user = this;
     if (this.isModified('password') || this.isNew) {
-        bcrypt.genSalt(10, function (err, salt) {
+        bcrypt.genSalt(10, (err, salt)=> {
             if (err) {
                 return next(err);
             }
@@ -44,8 +45,20 @@ UserSchema.pre('save', function (next) {
     }
 });
 
-UserSchema.methods.comparePassword = function (passw, cb) {
-    bcrypt.compare(passw, this.password, function (err, isMatch) {
+UserSchema.post('remove',function(doc) {
+    KeyStore.find({
+        userId: doc._id
+    }, (err,data)=> {
+        if(!err && data) {
+            data.forEach((element, index)=> {
+                element.remove((err)=>{});
+            });
+        }
+    });
+});
+
+UserSchema.methods.comparePassword = function(passw, cb) {
+    bcrypt.compare(passw, this.password, function(err, isMatch) {
         if (err) {
             return cb(err);
         }

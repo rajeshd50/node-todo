@@ -5,9 +5,10 @@ let _ = require('lodash'),
   mongoose = require('mongoose'),
   config = require('../../../config/config').config,
   jwt = require('jsonwebtoken'),
-  User = mongoose.model('User');
+  User = mongoose.model('User'),
+  KeyStore = mongoose.model('KeyStore');
 
-let TOKEN_EXPIRATION = 60*24;
+let TOKEN_EXPIRATION = 3600000*24;
 
 exports.authenticate = (req,res)=> {
 	if(!req.body.userName) {
@@ -34,7 +35,19 @@ exports.authenticate = (req,res)=> {
 					userName: req.body.userName,
 					userId: user._id
 				},config.jwtSecret);
-			res.status(200).json({message:'Success!',token:token});
+			let keyData = {
+				userId: user._id,
+				token: token,
+				expiary: new Date((new Date()).getTime()+TOKEN_EXPIRATION)
+			};
+			KeyStore.findOneAndUpdate({
+				userId: user._id
+			},keyData,{upsert:true},(err,key)=> {
+				if(err) {
+					return res.status(500).json({message:'Error occured'});
+				}
+				return res.status(200).json({message:'Success!',token:token,userId:user._id});
+			});
 		});
 	})
 };
@@ -50,9 +63,14 @@ exports.createUser = (req,res)=> {
 
 	user.save((err,data)=> {
 		if(err || !data) {
-			return res.status(500).send({message:'Something wrong!'});
+			console.log('error,500');
+			return res.status(500).send({message:'Username already exists!'});
 		}
 		delete data.password;
 		return res.status(201).json(data);
 	});
+};
+
+exports.checkToken = (req,res)=> {
+	res.status(200).json({message:'Token alive!!'});
 }

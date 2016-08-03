@@ -6,6 +6,7 @@ let express = require('express'),
   logger = require('morgan'),
   config = require('./app_api/config/config').config,
   routes = require('./app_api/modules/index'),
+  methodOverride = require('method-override'),
   expressJwt = require('express-jwt'),
   jwt = require('jsonwebtoken'),
   unless = require('express-unless'),
@@ -14,15 +15,30 @@ let express = require('express'),
 let app = express();
 
 let unprotectedRoute = [
-    '/api/user/authenticate',
-    '/api/user/register'
+  '/api/user/authenticate',
+  '/api/user/register'
 ];
 
 require('./app_api/db/');
 
 app.use(logger('dev'));
+
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(methodOverride);
+
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*"); 
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-type,Accept,X-Access-Token,X-Key');
+  if (req.method == 'OPTIONS') {
+    console.log('here options')
+    res.status(200).end();
+  } else {
+    next();
+  }
+});
+
 app.use(expressJwt({
   secret: config.jwtSecret,
   getToken: function fromHeaderOrQuerystring(req) {
@@ -30,8 +46,8 @@ app.use(expressJwt({
       return req.headers.authorization.split(' ')[1];
     } else if (req.query && req.query.token) {
       return req.query.token;
-    } else if(req.body && req.body.token) {
-    	return req.body.token;
+    } else if (req.body && req.body.token) {
+      return req.body.token;
     }
     return null;
   }
@@ -39,11 +55,24 @@ app.use(expressJwt({
   path: unprotectedRoute
 }));
 
-app.use(checkValidation().unless({path: unprotectedRoute}));
+app.use(checkValidation().unless({ path: unprotectedRoute }));
+
+// app.use(function(req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, X-Auth-Token");
+//   res.header("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE, OPTIONS");
+
+//   if ('OPTIONS' == req.method) {
+//     res.send(200);
+//   }
+
+//   next();
+// });
 
 app.use('/api', routes);
 
 app.use((err, req, res, next) => {
+  console.log('error ',req);
   if (err.constructor.name === 'UnauthorizedError') {
     let message = err.inner && err.inner.message || 'Unauthorized access!!';
     return res.status(401).json({ message: message });

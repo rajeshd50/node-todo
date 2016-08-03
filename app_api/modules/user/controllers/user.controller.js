@@ -46,7 +46,12 @@ exports.authenticate = (req,res)=> {
 				if(err) {
 					return res.status(500).json({message:'Error occured'});
 				}
-				return res.status(200).json({message:'Success!',token:token,userId:user._id});
+				return res.status(200).json({
+					message:'Success!',
+					token:token,
+					userId:user._id,
+					userName: user.userName
+				});
 			});
 		});
 	})
@@ -72,5 +77,23 @@ exports.createUser = (req,res)=> {
 };
 
 exports.checkToken = (req,res)=> {
-	res.status(200).json({message:'Token alive!!'});
+	res.status(200).json({
+		message: 'Token alive!!',
+		token: req.jwtToken,
+		userId: req.user.userId,
+		userName: req.user.userName
+	});
+}
+
+
+exports.logout = (req,res)=> {
+	KeyStore.remove({
+		userId: req.user.userId,
+		token: req.jwtToken
+	},(err,data)=> {
+		if(err) {
+			return res.status(500).send({message:'Could not logout!'});
+		}
+		return res.status(200).send({message:'Success!!'});
+	});
 }

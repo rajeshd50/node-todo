@@ -31,6 +31,7 @@ module.exports = (config)=> {
 				data.remove((err)=>{});
 				return res.status(403).json({message: 'Token expired!!'});
 			}
+			req.jwtToken = token;
 			next();
 		})
 	};

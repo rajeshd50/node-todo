@@ -1,0 +1,539 @@
+define({ "api": [
+  {
+    "type": "get",
+    "url": "/todo/single/:todoId",
+    "title": "Get a single todo of the user",
+    "name": "GetSingleTodo",
+    "group": "Todo",
+    "description": "<p>Get a single todo of the user</p>",
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "todoId",
+            "description": "<p>id of the todo.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>Token of the user.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "{\n  \"token\" : \"token\",\n  \"todoId\": \"todo_id\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n\t{\n\t\t\"_id\"       : \"todo_id\",\n\t\t\"text\"      : \"todo text\",\n\t\t\"completed\" : \"false/true\",\n\t\t\"createdOn\" : \"creation date\",\n\t\t\"file\"      : {\n                  \"path\"  : \"url of the file\",\n                  \"uuid\"  : \"id of the file\",\n                  \"type\"  : \"Type of the file\"\n                  },\n\t\t\"expiary\"   : \"Todo expiary date\",\n\t\t\"user\"      : \"The user id of the creator\"\n\t}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "RequiredFiledMissing",
+            "description": "<p>The <code>token</code> was not present in request.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "ToeknInvalid",
+            "description": "<p>The <code>token</code> is not valid/expired.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "TodoNotFound",
+            "description": "<p>The <code>todoId</code> is not valid.</p>"
+          }
+        ],
+        "Error 5xx": [
+          {
+            "group": "Error 5xx",
+            "optional": false,
+            "field": "ServerError",
+            "description": "<p>Some server error occured</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "RequiredFiledMissing:",
+          "content": "HTTP/1.1 400 Bad Request\n{\n  \"message\": \"Token missing\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ToeknInvalid:",
+          "content": "HTTP/1.1 401 Unauthorized\n{\n  \"message\": \"Invalid token\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "TodoNotFound:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"message\": \"Not valid todo id\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ServerError:",
+          "content": "HTTP/1.1 500 Server Error\n{\n  \"message\": \"Server Error\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "./app_api/doc/doc_spec.js",
+    "groupTitle": "Todo"
+  },
+  {
+    "type": "get",
+    "url": "/todo/list",
+    "title": "Get the todos of a user loggedin",
+    "name": "GetTodoList",
+    "group": "Todo",
+    "description": "<p>Get the todos of a user loggedin</p>",
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>Token of the user.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "{\n  \"token\": \"token\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n[\n\t{\n\t\t\"_id\"       : \"todo_id\",\n\t\t\"text\"      : \"todo text\",\n\t\t\"completed\" : \"false/true\",\n\t\t\"createdOn\" : \"creation date\",\n\t\t\"file\"      : {\n                  \"path\"  : \"url of the file\",\n                  \"uuid\"  : \"id of the file\",\n                  \"type\"  : \"Type of the file\"\n                  },\n\t\t\"expiary\"   : \"Todo expiary date\",\n\t\t\"user\"      : \"The user id of the creator\"\n\t}\n]",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "RequiredFiledMissing",
+            "description": "<p>The <code>token</code> was not present in request.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "ToeknInvalid",
+            "description": "<p>The <code>token</code> is not valid/expired.</p>"
+          }
+        ],
+        "Error 5xx": [
+          {
+            "group": "Error 5xx",
+            "optional": false,
+            "field": "ServerError",
+            "description": "<p>Some server error occured</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "RequiredFiledMissing:",
+          "content": "HTTP/1.1 400 Bad Request\n{\n  \"message\": \"Token missing\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ToeknInvalid:",
+          "content": "HTTP/1.1 401 Unauthorized\n{\n  \"message\": \"Invalid token\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ServerError:",
+          "content": "HTTP/1.1 500 Server Error\n{\n  \"message\": \"Could not logout\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "./app_api/doc/doc_spec.js",
+    "groupTitle": "Todo"
+  },
+  {
+    "type": "post",
+    "url": "/user/validate",
+    "title": "Check if a token is valid or not",
+    "name": "CheckToken",
+    "group": "User",
+    "description": "<p>Check if a token is valid or not</p>",
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>Token to check.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "{\n  \"token\": \"token\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\"  : \"Token alive!!\",\n  \"token\"    : \"auth_token\",\n  \"userId\"   : \"userId\",\n  \"UserName\" : \"Username\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "RequiredFiledMissing",
+            "description": "<p>The <code>token</code> was not present in request.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "ToeknInvalid",
+            "description": "<p>The <code>token</code> is not valid/expired.</p>"
+          }
+        ],
+        "Error 5xx": [
+          {
+            "group": "Error 5xx",
+            "optional": false,
+            "field": "ServerError",
+            "description": "<p>Some server error occured</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "RequiredFiledMissing:",
+          "content": "HTTP/1.1 400 Bad Request\n{\n  \"message\": \"Token missing\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ToeknInvalid:",
+          "content": "HTTP/1.1 401 Unauthorized\n{\n  \"message\": \"Invalid token\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ServerError:",
+          "content": "HTTP/1.1 500 Server Error\n{\n  \"message\": \"Error occured\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "./app_api/doc/doc_spec.js",
+    "groupTitle": "User"
+  },
+  {
+    "type": "post",
+    "url": "/user/authenticate",
+    "title": "Login an already registered user",
+    "name": "LoginUser",
+    "group": "User",
+    "description": "<p>Login an already registered user</p>",
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "userName",
+            "description": "<p>Mandatory user name.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "password",
+            "description": "<p>Mandatory password.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "{\n  \"userName\": \"username\",\n  \"password\": \"password\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\"  : \"Success!\",\n  \"token\"    : \"auth_token\",\n  \"userId\"   : \"userId\",\n  \"UserName\" : \"Username\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "RequiredFiledMissing",
+            "description": "<p>The <code>userName</code> or <code>password</code> was not present in request.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "UserNotFound",
+            "description": "<p>The <code>userName</code> is not valid user.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "PasswordWrong",
+            "description": "<p>The <code>password</code> is wrong.</p>"
+          }
+        ],
+        "Error 5xx": [
+          {
+            "group": "Error 5xx",
+            "optional": false,
+            "field": "ServerError",
+            "description": "<p>Some server error occured</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "RequiredFiledMissing:",
+          "content": "HTTP/1.1 400 Bad Request\n{\n  \"message\": \"username/password missing\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "UserNotFound:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"message\": \"User not found\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "PasswordWrong:",
+          "content": "HTTP/1.1 403 No Permission\n{\n  \"message\": \"Password is wrong\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ServerError:",
+          "content": "HTTP/1.1 500 Server Error\n{\n  \"message\": \"Error occured\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "./app_api/doc/doc_spec.js",
+    "groupTitle": "User"
+  },
+  {
+    "type": "get",
+    "url": "/user/logout",
+    "title": "Logout a logged-in user",
+    "name": "LogoutUser",
+    "group": "User",
+    "description": "<p>Logout a logged-in user</p>",
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>Token to check.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "{\n  \"token\": \"token\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\"  : \"Success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "RequiredFiledMissing",
+            "description": "<p>The <code>token</code> was not present in request.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "ToeknInvalid",
+            "description": "<p>The <code>token</code> is not valid/expired.</p>"
+          }
+        ],
+        "Error 5xx": [
+          {
+            "group": "Error 5xx",
+            "optional": false,
+            "field": "ServerError",
+            "description": "<p>Some server error occured</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "RequiredFiledMissing:",
+          "content": "HTTP/1.1 400 Bad Request\n{\n  \"message\": \"Token missing\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ToeknInvalid:",
+          "content": "HTTP/1.1 401 Unauthorized\n{\n  \"message\": \"Invalid token\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ServerError:",
+          "content": "HTTP/1.1 500 Server Error\n{\n  \"message\": \"Could not logout\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "./app_api/doc/doc_spec.js",
+    "groupTitle": "User"
+  },
+  {
+    "type": "post",
+    "url": "/user/register",
+    "title": "Register a new user",
+    "name": "RegisterUser",
+    "group": "User",
+    "description": "<p>Register a new user</p>",
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "userName",
+            "description": "<p>Mandatory user name.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "password",
+            "description": "<p>Mandatory password.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "email",
+            "description": "<p>Optional email.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "{\n  \"userName\": \"username\",\n  \"password\": \"password\",\n  \"email\"   : \"email@abc.com\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"_id\":     : \"23hjf8923ncnkd2323\",\n  \"userName\" : \"username\",\n  \"password\" : \"password\",\n  \"email\"    : \"email@abc.com\",\n  \"createdOn\": \"created date\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "RequiredFiledMissing",
+            "description": "<p>The <code>userName</code> or <code>password</code> was not present in request.</p>"
+          }
+        ],
+        "Error 5xx": [
+          {
+            "group": "Error 5xx",
+            "optional": false,
+            "field": "UsernameExixts",
+            "description": "<p>The <code>userName</code> is already present.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "RequiredFiledMissing:",
+          "content": "HTTP/1.1 400 Bad request\n{\n  \"message\": \"username/password missing\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "UsernameExixts:",
+          "content": "HTTP/1.1 500 Server Error\n{\n  \"message\": \"Username already exists\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "./app_api/doc/doc_spec.js",
+    "groupTitle": "User"
+  }
+] });

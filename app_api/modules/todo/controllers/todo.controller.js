@@ -22,20 +22,45 @@ exports.listTodo = (req, res) => {
   })
 }
 
+exports.getSingle = (req, res) => {
+  return sendJSON(res, 200, req.todoObj);
+}
+
 exports.createTodo = (req, res) => {
   req.body.user = req.user.userId;
-  console.log('file:: ',req.file);
+
+  let keyType = Object.keys(req.files);
+  if (keyType.length > 0) {
+    let fileObj = req.files[keyType[0]];
+    req.body.file = {
+      path: path.join('uploads', fileObj.uuid, fileObj.field, fileObj.filename),
+      uuid: fileObj.uuid,
+      type: fileObj.field
+    }
+  }
   let todo = new Todo(req.body);
   todo.save((err, data) => {
     if (err) {
       return sendJSON(res, 400, { message: 'Error, not saved' });
     }
-    return sendJSON(res, 201, { message: 'Created!!' });
+    return sendJSON(res, 201, data);
   })
 }
-
 exports.updateTodo = (req, res) => {
   let todoObj = req.todoObj;
+
+  if (req.files) {
+    let keyType = Object.keys(req.files);
+    if (keyType.length > 0) {
+      let fileObj = req.files[keyType[0]];
+      req.body.file = {
+        path: path.join('uploads', fileObj.uuid, fileObj.field, fileObj.filename),
+        uuid: fileObj.uuid,
+        type: fileObj.field
+      }
+    }
+  }
+
   for (var key in req.body) {
     todoObj[key] = req.body[key];
   }
@@ -53,7 +78,7 @@ exports.updateTodo = (req, res) => {
 exports.removeTodo = (req, res) => {
   let todoObj = req.todoObj;
 
-  todoObj.remove((err)=> {
+  todoObj.remove((err) => {
     if (err) {
       return res.status(400).send({
         message: 'Some error occured while deleting the todo'
